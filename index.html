@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Commits Card Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+        			margin: 0;
+        			padding: 0;
+        			box-sizing: border-box;
+        		}
+        
+        		body {
+        			font-family: 'Inter', sans-serif;
+        			background: #0d1117;
+        			min-height: 100vh;
+        			color: #e6edf3;
+        		}
+        
+        		/* When accessed with parameters, show only the SVG */
+        		body.render-mode {
+        			background: transparent;
+        			display: flex;
+        			align-items: flex-start;
+        			justify-content: flex-start;
+        			padding: 0;
+        			margin: 0;
+        		}
+        
+        		body.render-mode .generator-ui {
+        			display: none;
+        		}
+        
+        		body.render-mode #svgOutput {
+        			margin: 0;
+        			padding: 0;
+        		}
+        
+        		.generator-ui {
+        			max-width: 1200px;
+        			margin: 0 auto;
+        			padding: 40px 20px;
+        		}
+        
+        		/* Header */
+        		.header {
+        			text-align: center;
+        			margin-bottom: 50px;
+        		}
+        
+        		.header h1 {
+        			font-size: 2.8rem;
+        			font-weight: 700;
+        			background: linear-gradient(135deg, #58a6ff, #a371f7, #f778ba);
+        			-webkit-background-clip: text;
+        			-webkit-text-fill-color: transparent;
+        			background-clip: text;
+        			margin-bottom: 15px;
+        			display: flex;
+        			align-items: center;
+        			justify-content: center;
+        			gap: 15px;
+        		}
+        
+        		.header-icon {
+        			width: 48px;
+        			height: 48px;
+        			background: linear-gradient(135deg, #58a6ff, #a371f7, #f778ba);
+        			border-radius: 50%;
+        			padding: 8px;
+        			flex-shrink: 0;
+        		}
+        
+        		.header-icon path {
+        			fill: #0d1117;
+        		}
+        
+        		.header p {
+        			color: #8b949e;
+        			font-size: 1.1rem;
+        			max-width: 600px;
+        			margin: 0 auto;
+        		}
+        
+        		/* Form Section */
+        		.config-section {
+        			display: grid;
+        			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        			gap: 30px;
+        			margin-bottom: 40px;
+        		}
+        
+        		.config-card {
+        			background: #161b22;
+        			border: 1px solid #30363d;
+        			border-radius: 12px;
+        			padding: 25px;
+        		}
+        
+        		.config-card h3 {
+        			font-size: 1rem;
+        			color: #58a6ff;
+        			margin-bottom: 20px;
+        			display: flex;
+        			align-items: center;
+        			gap: 10px;
+        		}
+        
+        		.form-group {
+        			margin-bottom: 18px;
+        		}
+        
+        		.form-group label {
+        			display: block;
+        			font-size: 0.85rem;
+        			color: #8b949e;
+        			margin-bottom: 8px;
+        			font-weight: 500;
+        		}
+        
+        		.form-group input,
+        		.form-group select {
+        			width: 100%;
+        			padding: 12px 15px;
+        			background: #0d1117;
+        			border: 1px solid #30363d;
+        			border-radius: 8px;
+        			color: #e6edf3;
+        			font-size: 0.95rem;
+        			font-family: 'JetBrains Mono', monospace;
+        			transition: border-color 0.2s;
+        		}
+        
+        		.form-group input:focus,
+        		.form-group select:focus {
+        			outline: none;
+        			border-color: #58a6ff;
+        		}
+        
+        		.form-row {
+        			display: grid;
+        			grid-template-columns: 1fr 1fr;
+        			gap: 15px;
+        		}
+        
+        		.color-input-group {
+        			display: flex;
+        			gap: 10px;
+        			align-items: center;
+        		}
+        
+        		.color-input-group input[type="color"] {
+        			width: 50px;
+        			height: 42px;
+        			padding: 2px;
+        			cursor: pointer;
+        		}
+        
+        		.color-input-group input[type="text"] {
+        			flex: 1;
+        		}
+        
+        		/* Buttons */
+        		.btn-group {
+        			display: flex;
+        			gap: 15px;
+        			flex-wrap: wrap;
+        			margin-bottom: 30px;
+        		}
+        
+        		.btn {
+        			padding: 14px 28px;
+        			border: none;
+        			border-radius: 8px;
+        			font-size: 0.95rem;
+        			font-weight: 600;
+        			cursor: pointer;
+        			transition: all 0.2s;
+        			display: flex;
+        			align-items: center;
+        			gap: 8px;
+        		}
+        
+        		.btn-primary {
+        			background: linear-gradient(135deg, #238636, #2ea043);
+        			color: #fff;
+        		}
+        
+        		.btn-primary:hover {
+        			box-shadow: 0 4px 20px rgba(35, 134, 54, 0.4);
+        		}
+        
+        		.btn-secondary {
+        			background: #21262d;
+        			color: #c9d1d9;
+        			border: 1px solid #30363d;
+        		}
+        
+        		.btn-secondary:hover {
+        			background: #30363d;
+        		}
+        
+        		/* Preview Section */
+        		.preview-section {
+        			background: #161b22;
+        			border: 1px solid #30363d;
+        			border-radius: 12px;
+        			padding: 30px;
+        			margin-bottom: 40px;
+        		}
+        
+        		.preview-header {
+        			display: flex;
+        			justify-content: space-between;
+        			align-items: center;
+        			margin-bottom: 25px;
+        		}
+        
+        		.preview-header h3 {
+        			color: #e6edf3;
+        			font-size: 1.1rem;
+        		}
+        
+        		.preview-tabs {
+        			display: flex;
+        			gap: 10px;
+        		}
+        
+        		.tab-btn {
+        			padding: 8px 16px;
+        			background: #0d1117;
+        			border: 1px solid #30363d;
+        			border-radius: 6px;
+        			color: #8b949e;
+        			font-size: 0.85rem;
+        			cursor: pointer;
+        			transition: all 0.2s;
+        		}
+        
+        		.tab-btn.active {
+        			background: #238636;
+        			border-color: #238636;
+        			color: #fff;
+        		}
+        
+        		#svgOutput {
+        			display: flex;
+        			justify-content: center;
+        			padding: 20px;
+        			background: repeating-conic-gradient(#21262d 0% 25%, #161b22 0% 50%) 50% / 20px 20px;
+        			border-radius: 8px;
+        			min-height: 200px;
+        		}
+        
+        		#svgOutput svg {
+        			max-width: 100%;
+        			height: auto;
+        		}
+        
+        		/* Code Section */
+        		.code-section {
+        			background: #161b22;
+        			border: 1px solid #30363d;
+        			border-radius: 12px;
+        			padding: 30px;
+        		}
+        
+        		.code-section h3 {
+        			color: #e6edf3;
+        			margin-bottom: 20px;
+        		}
+        
+        		.code-block {
+        			background: #0d1117;
+        			border: 1px solid #30363d;
+        			border-radius: 8px;
+        			padding: 20px;
+        			overflow-x: auto;
+        			margin-bottom: 15px;
+        		}
+        
+        		.code-block code {
+        			font-family: 'JetBrains Mono', monospace;
+        			font-size: 0.85rem;
+        			color: #7ee787;
+        			white-space: pre-wrap;
+        			word-break: break-all;
+        		}
+        
+        		.code-label {
+        			font-size: 0.8rem;
+        			color: #8b949e;
+        			margin-bottom: 10px;
+        			font-weight: 500;
+        		}
+        
+        		/* Loading */
+        		.loading-overlay {
+        			position: fixed;
+        			inset: 0;
+        			background: rgba(13, 17, 23, 0.9);
+        			display: none;
+        			align-items: center;
+        			justify-content: center;
+        			z-index: 1000;
+        		}
+        
+        		.loading-overlay.active {
+        			display: flex;
+        		}
+        
+        		.loader {
+        			text-align: center;
+        		}
+        
+        		.loader-spinner {
+        			width: 50px;
+        			height: 50px;
+        			border: 3px solid #30363d;
+        			border-top-color: #58a6ff;
+        			border-radius: 50%;
+        			animation: spin 1s linear infinite;
+        			margin: 0 auto 20px;
+        		}
+        
+        		@keyframes spin {
+        			to {
+        				transform: rotate(360deg);
+        			}
+        		}
+        
+        		/* Toast */
+        		.toast {
+        			position: fixed;
+        			bottom: 30px;
+        			right: 30px;
+        			background: #238636;
+        			color: #fff;
+        			padding: 15px 25px;
+        			border-radius: 8px;
+        			font-weight: 500;
+        			transform: translateY(100px);
+        			opacity: 0;
+        			transition: all 0.3s;
+        			z-index: 1001;
+        		}
+        
+        		.toast.show {
+        			transform: translateY(0);
+        			opacity: 1;
+        		}
+        
+        		/* Theme Presets */
+        		.theme-presets {
+        			display: flex;
+        			gap: 10px;
+        			flex-wrap: wrap;
+        			margin-bottom: 20px;
+        		}
+        
+        		.theme-preset {
+        			width: 40px;
+        			height: 40px;
+        			border-radius: 8px;
+        			cursor: pointer;
+        			border: 2px solid transparent;
+        			transition: all 0.2s;
+        			position: relative;
+        			overflow: hidden;
+        		}
+        
+        		.theme-preset:hover {
+        			transform: scale(1.1);
+        		}
+        
+        		.theme-preset.active {
+        			border-color: #58a6ff;
+        		}
+        
+        		.theme-preset::before,
+        		.theme-preset::after {
+        			content: '';
+        			position: absolute;
+        			left: 0;
+        			right: 0;
+        			height: 50%;
+        		}
+        
+        		.theme-preset::before {
+        			top: 0;
+        		}
+        
+        		.theme-preset::after {
+        			bottom: 0;
+        		}
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <p>Fetching from GitHub...</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <!-- Generator UI -->
+    <div class="generator-ui">
+        <div class="header">
+            <h1>
+				<svg class="header-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path
+						d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+				</svg>
+				GitHub Commits Card
+			</h1>
+            <p>Generate beautiful, embeddable SVG cards for your GitHub commits. Perfect for README.md files!</p>
+        </div>
+
+        <div class="config-section">
+            <!-- Basic Config -->
+            <div class="config-card">
+                <h3>
+					<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+						<path
+							d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+					</svg>
+					Repository Details
+				</h3>
+                <div class="form-group">
+                    <label>Username (u)</label>
+                    <input type="text" id="username" placeholder="e.g., facebook" value="">
+                </div>
+                <div class="form-group">
+                    <label>Repository (repo)</label>
+                    <input type="text" id="repo" placeholder="e.g., react" value="">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Commits Count (count)</label>
+                        <input type="number" id="count" placeholder="5" value="5" min="1" max="20">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Width (w)</label>
+                        <input type="number" id="width" placeholder="500" value="500" min="300" max="800">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Config -->
+            <div class="config-card">
+                <h3>
+									<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+										<path d="M8 4a4 4 0 100 8 4 4 0 000-8zM0 8a8 8 0 1116 0A8 8 0 010 8z" />
+									</svg>
+									Theme & Colors
+								</h3>
+                <div class="form-group">
+                    <label>Theme Preset</label>
+                    <select id="themePreset">
+                        <option value="dark">🌙 Dark (Default)</option>
+                        <option value="light">☀️ Light</option>
+                        <option value="github_dark">🐙 GitHub Dark</option>
+                        <option value="github_light">🐙 GitHub Light</option>
+                        <option value="dracula">🧛 Dracula</option>
+                        <option value="nord">❄️ Nord</option>
+                        <option value="monokai">🎨 Monokai</option>
+                        <option value="tokyo_night">🌃 Tokyo Night</option>
+                        <option value="catppuccin">🐱 Catppuccin</option>
+                        <option value="gruvbox">🟫 Gruvbox</option>
+                        <option value="one_dark">⚫ One Dark</option>
+                        <option value="synthwave">🌈 Synthwave</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+                <div id="customColors" style="display: none;">
+                    <div class="form-group">
+                        <label>Background Color (bg)</label>
+                        <div class="color-input-group">
+                            <input type="color" id="bgColorPicker" value="#0d1117">
+                            <input type="text" id="bgColor" placeholder="#0d1117" value="0d1117">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Border Color (border)</label>
+                        <div class="color-input-group">
+                            <input type="color" id="borderColorPicker" value="#30363d">
+                            <input type="text" id="borderColor" placeholder="#30363d" value="30363d">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Title Color (title)</label>
+                        <div class="color-input-group">
+                            <input type="color" id="titleColorPicker" value="#58a6ff">
+                            <input type="text" id="titleColor" placeholder="#58a6ff" value="58a6ff">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Text Color (text)</label>
+                        <div class="color-input-group">
+                            <input type="color" id="textColorPicker" value="#e6edf3">
+                            <input type="text" id="textColor" placeholder="#e6edf3" value="e6edf3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Accent Color (accent)</label>
+                        <div class="color-input-group">
+                            <input type="color" id="accentColorPicker" value="#238636">
+                            <input type="text" id="accentColor" placeholder="#238636" value="238636">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display Options -->
+            <div class="config-card">
+                <h3>
+														<svg width="18" height="18" viewBox="0 0 16 16"
+															fill="currentColor">
+															<path
+																d="M9.5 3h-3a.5.5 0 000 1h3a.5.5 0 000-1zM6 6.5a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zm.5 2.5a.5.5 0 000 1h3a.5.5 0 000-1h-3z" />
+															<path
+																d="M2 0a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2H2zm12 1a1 1 0 011 1v12a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h12z" />
+														</svg>
+														Display Options
+													</h3>
+                <div class="form-group">
+                    <label>Font (font)</label>
+                    <select id="font">
+                        <option value="jetbrains">JetBrains Mono</option>
+                        <option value="fira">Fira Code</option>
+                        <option value="source">Source Code Pro</option>
+                        <option value="ubuntu">Ubuntu Mono</option>
+                        <option value="cascadia">Cascadia Code</option>
+                        <option value="inter">Inter</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Border Radius (radius)</label>
+                        <input type="number" id="radius" value="10" min="0" max="30">
+                    </div>
+                    <div class="form-group">
+                        <label>Border Width</label>
+                        <input type="number" id="borderWidth" value="1" min="0" max="5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="showIcons" checked style="width: auto;"> Show Icons (icons)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="showStats" checked style="width: auto;"> Show Repo Stats (stats)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="showAvatar" checked style="width: auto;"> Show Avatar (avatar)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="showDate" checked style="width: auto;"> Show Dates (date)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="generateCard()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.5 7.5a.5.5 0 010 1H9v2.5a.5.5 0 01-1 0V8.5H5.5a.5.5 0 010-1H8V5a.5.5 0 011 0v2.5h2.5z" />
+                </svg>
+                Generate Card
+            </button>
+            <button class="btn btn-secondary" onclick="copySVG()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" />
+                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" />
+                </svg>
+                Copy SVG
+            </button>
+            <button class="btn btn-secondary" onclick="copyURL()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M4.715 6.542L3.343 7.914a3 3 0 104.243 4.243l1.828-1.829A3 3 0 008.586 5.5L8 6.086a1.002 1.002 0 00-.154.199 2 2 0 01.861 3.337L6.88 11.45a2 2 0 11-2.83-2.83l.793-.792a4.018 4.018 0 01-.128-1.287z" />
+                    <path d="M6.586 4.672A3 3 0 007.414 9.5l.775-.776a2 2 0 01-.896-3.346L9.12 3.55a2 2 0 112.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 10-4.243-4.243L6.586 4.672z" />
+                </svg>
+                Copy Embed URL
+            </button>
+            <button class="btn btn-secondary" onclick="downloadSVG()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 12l-4-4h2.5V3h3v5H12L8 12z" />
+                    <path d="M14 14H2v-2h12v2z" />
+                </svg>
+                Download SVG
+            </button>
+            <button class="btn btn-secondary" onclick="copyMarkdown()">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" />
+                </svg>
+                Copy Markdown
+            </button>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <h3>Preview</h3>
+                <div class="preview-tabs">
+                    <button class="tab-btn active" onclick="setPreviewBg('transparent', this)">Transparent</button>
+                    <button class="tab-btn" onclick="setPreviewBg('#ffffff', this)">Light</button>
+                    <button class="tab-btn" onclick="setPreviewBg('#0d1117', this)">Dark</button>
+                </div>
+            </div>
+            <div id="svgOutput">
+                <p style="color: #8b949e;">Enter repository details and click "Generate Card"</p>
+            </div>
+        </div>
+
+        <!-- Code Output -->
+        <div class="code-section">
+            <h3>📋 Embed Codes</h3>
+
+            <div class="code-label">Markdown (Simple)</div>
+            <div class="code-block">
+                <code id="markdownSimple">![GitHub Commits](URL_HERE)</code>
+            </div>
+
+            <div class="code-label">Markdown (With Dark/Light Theme Support)
+            </div>
+            <div class="code-block">
+                <code id="markdownAdvanced">&lt;picture&gt;
+  &lt;source srcset="URL_DARK" media="(prefers-color-scheme: dark)" /&gt;
+  &lt;source srcset="URL_LIGHT" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" /&gt;
+  &lt;img src="URL_LIGHT" alt="GitHub Commits Card" /&gt;
+&lt;/picture&gt;</code>
+            </div>
+
+            <div class="code-label">HTML</div>
+            <div class="code-block">
+                <code id="htmlEmbed">&lt;img src="URL_HERE" alt="GitHub Commits Card" /&gt;</code>
+            </div>
+
+            <div class="code-label">Direct URL</div>
+            <div class="code-block">
+                <code id="directUrl">Generate a card to see the URL</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- SVG Output for Direct Rendering -->
+    <div id="svgRenderOutput" style="display: none;"></div>
+
+    <script>
+        // Theme definitions
+                const themes = {
+                    dark: {
+                        bg: '0d1117',
+                        border: '30363d',
+                        title: '58a6ff',
+                        text: 'e6edf3',
+                        subtext: '8b949e',
+                        accent: '238636',
+                        sha: '7ee787'
+                    },
+                    light: {
+                        bg: 'ffffff',
+                        border: 'd0d7de',
+                        title: '0969da',
+                        text: '24292f',
+                        subtext: '57606a',
+                        accent: '1a7f37',
+                        sha: '1a7f37'
+                    },
+                    github_dark: {
+                        bg: '0d1117',
+                        border: '30363d',
+                        title: '58a6ff',
+                        text: 'c9d1d9',
+                        subtext: '8b949e',
+                        accent: '238636',
+                        sha: '7ee787'
+                    },
+                    github_light: {
+                        bg: 'ffffff',
+                        border: 'd0d7de',
+                        title: '0969da',
+                        text: '24292f',
+                        subtext: '57606a',
+                        accent: '1a7f37',
+                        sha: '1a7f37'
+                    },
+                    dracula: {
+                        bg: '282a36',
+                        border: '44475a',
+                        title: 'ff79c6',
+                        text: 'f8f8f2',
+                        subtext: '6272a4',
+                        accent: '50fa7b',
+                        sha: 'bd93f9'
+                    },
+                    nord: {
+                        bg: '2e3440',
+                        border: '4c566a',
+                        title: '88c0d0',
+                        text: 'eceff4',
+                        subtext: 'd8dee9',
+                        accent: 'a3be8c',
+                        sha: 'b48ead'
+                    },
+                    monokai: {
+                        bg: '272822',
+                        border: '49483e',
+                        title: 'f92672',
+                        text: 'f8f8f2',
+                        subtext: '75715e',
+                        accent: 'a6e22e',
+                        sha: 'e6db74'
+                    },
+                    tokyo_night: {
+                        bg: '1a1b26',
+                        border: '33467c',
+                        title: '7aa2f7',
+                        text: 'c0caf5',
+                        subtext: '565f89',
+                        accent: '9ece6a',
+                        sha: 'bb9af7'
+                    },
+                    catppuccin: {
+                        bg: '1e1e2e',
+                        border: '313244',
+                        title: 'cba6f7',
+                        text: 'cdd6f4',
+                        subtext: '6c7086',
+                        accent: 'a6e3a1',
+                        sha: 'f5c2e7'
+                    },
+                    gruvbox: {
+                        bg: '282828',
+                        border: '3c3836',
+                        title: 'fabd2f',
+                        text: 'ebdbb2',
+                        subtext: 'a89984',
+                        accent: 'b8bb26',
+                        sha: 'd3869b'
+                    },
+                    one_dark: {
+                        bg: '282c34',
+                        border: '4b5263',
+                        title: '61afef',
+                        text: 'abb2bf',
+                        subtext: '5c6370',
+                        accent: '98c379',
+                        sha: 'c678dd'
+                    },
+                    synthwave: {
+                        bg: '2b213a',
+                        border: '495495',
+                        title: 'e92efb',
+                        text: 'f4eee4',
+                        subtext: 'b6a1c4',
+                        accent: '72f1b8',
+                        sha: 'fede5d'
+                    }
+                };
+        
+                // Font definitions
+                const fonts = {
+                    jetbrains: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                    fira: "'Fira Code', 'JetBrains Mono', monospace",
+                    source: "'Source Code Pro', monospace",
+                    ubuntu: "'Ubuntu Mono', monospace",
+                    cascadia: "'Cascadia Code', 'Fira Code', monospace",
+                    inter: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+                };
+        
+                // Check for URL parameters on load
+                document.addEventListener('DOMContentLoaded', () => {
+                    const params = new URLSearchParams(window.location.search);
+                    
+                    // If we have username parameter, go into render mode
+                    if (params.has('u') || params.has('username')) {
+                        document.body.classList.add('render-mode');
+                        renderFromParams(params);
+                    }
+        
+                    // Theme preset change handler
+                    document.getElementById('themePreset').addEventListener('change', (e) => {
+                        const customColors = document.getElementById('customColors');
+                        if (e.target.value === 'custom') {
+                            customColors.style.display = 'block';
+                        } else {
+                            customColors.style.display = 'none';
+                            applyThemePreset(e.target.value);
+                        }
+                    });
+        
+                    // Color picker sync
+                    ['bg', 'border', 'title', 'text', 'accent'].forEach(type => {
+                        const picker = document.getElementById(`${type}ColorPicker`);
+                        const input = document.getElementById(`${type}Color`);
+                        if (picker && input) {
+                            picker.addEventListener('input', (e) => {
+                                input.value = e.target.value.substring(1);
+                            });
+                            input.addEventListener('input', (e) => {
+                                if (/^[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                    picker.value = '#' + e.target.value;
+                                }
+                            });
+                        }
+                    });
+                });
+        
+                function applyThemePreset(themeName) {
+                    const theme = themes[themeName];
+                    if (!theme) return;
+        
+                    document.getElementById('bgColor').value = theme.bg;
+                    document.getElementById('borderColor').value = theme.border;
+                    document.getElementById('titleColor').value = theme.title;
+                    document.getElementById('textColor').value = theme.text;
+                    document.getElementById('accentColor').value = theme.accent;
+        
+                    document.getElementById('bgColorPicker').value = '#' + theme.bg;
+                    document.getElementById('borderColorPicker').value = '#' + theme.border;
+                    document.getElementById('titleColorPicker').value = '#' + theme.title;
+                    document.getElementById('textColorPicker').value = '#' + theme.text;
+                    document.getElementById('accentColorPicker').value = '#' + theme.accent;
+                }
+        
+                async function renderFromParams(params) {
+                    const config = {
+                        username: params.get('u') || params.get('username'),
+                        repo: params.get('repo') || params.get('r'),
+                        count: parseInt(params.get('count') || params.get('c') || '5'),
+                        width: parseInt(params.get('w') || params.get('width') || '500'),
+                        theme: params.get('theme') || 'dark',
+                        bg: params.get('bg'),
+                        border: params.get('border'),
+                        title: params.get('title'),
+                        text: params.get('text'),
+                        accent: params.get('accent'),
+                        font: params.get('font') || 'jetbrains',
+                        radius: parseInt(params.get('radius') || '10'),
+                        showIcons: params.get('icons') !== 'false',
+                        showStats: params.get('stats') !== 'false',
+                        showAvatar: params.get('avatar') !== 'false',
+                        showDate: params.get('date') !== 'false'
+                    };
+        
+                    if (!config.username || !config.repo) {
+                        renderError('Missing username or repository');
+                        return;
+                    }
+        
+                    try {
+                        const data = await fetchGitHubData(config.username, config.repo, config.count);
+                        const svg = generateSVG(data, config);
+                        
+                        // Output just the SVG for direct embedding
+                        document.body.innerHTML = svg;
+                        document.body.style.margin = '0';
+                        document.body.style.padding = '0';
+                        
+                        // Set content type header if possible
+                        if (document.contentType) {
+                            document.contentType = 'image/svg+xml';
+                        }
+                    } catch (error) {
+                        renderError(error.message);
+                    }
+                }
+        
+                function renderError(message) {
+                    const svg = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
+                            <rect width="400" height="120" fill="#0d1117" rx="10"/>
+                            <rect x="0.5" y="0.5" width="399" height="119" fill="none" stroke="#f85149" rx="10" stroke-width="1"/>
+                            <text x="200" y="50" fill="#f85149" font-family="'JetBrains Mono', monospace" font-size="14" text-anchor="middle">⚠️ Error</text>
+                            <text x="200" y="75" fill="#f85149" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle">${escapeXml(message)}</text>
+                        </svg>
+                    `;
+                    document.body.innerHTML = svg;
+                }
+        
+                async function fetchGitHubData(username, repo, count) {
+                    // Fetch repo info
+                    const repoResponse = await fetch(`https://api.github.com/repos/${username}/${repo}`);
+                    if (!repoResponse.ok) {
+                        throw new Error(`Repository not found: ${username}/${repo}`);
+                    }
+                    const repoData = await repoResponse.json();
+        
+                    // Fetch commits
+                    const commitsResponse = await fetch(
+                        `https://api.github.com/repos/${username}/${repo}/commits?per_page=${count}`
+                    );
+                    if (!commitsResponse.ok) {
+                        throw new Error('Failed to fetch commits');
+                    }
+                    const commits = await commitsResponse.json();
+        
+                    return { repo: repoData, commits };
+                }
+        
+                async function generateCard() {
+                    const username = document.getElementById('username').value.trim();
+                    const repo = document.getElementById('repo').value.trim();
+        
+                    if (!username || !repo) {
+                        alert('Please enter both username and repository name');
+                        return;
+                    }
+        
+                    const loadingOverlay = document.getElementById('loadingOverlay');
+                    loadingOverlay.classList.add('active');
+        
+                    try {
+                        const config = getConfig();
+                        const data = await fetchGitHubData(username, repo, config.count);
+                        const svg = generateSVG(data, config);
+                        
+                        document.getElementById('svgOutput').innerHTML = svg;
+                        updateEmbedCodes(config);
+                    } catch (error) {
+                        alert('Error: ' + error.message);
+                    } finally {
+                        loadingOverlay.classList.remove('active');
+                    }
+                }
+        
+                function getConfig() {
+                    const themeName = document.getElementById('themePreset').value;
+                    const theme = themeName === 'custom' ? null : themes[themeName];
+        
+                    return {
+                        username: document.getElementById('username').value.trim(),
+                        repo: document.getElementById('repo').value.trim(),
+                        count: parseInt(document.getElementById('count').value) || 5,
+                        width: parseInt(document.getElementById('width').value) || 500,
+                        theme: themeName,
+                        bg: theme?.bg || document.getElementById('bgColor').value,
+                        border: theme?.border || document.getElementById('borderColor').value,
+                        title: theme?.title || document.getElementById('titleColor').value,
+                        text: theme?.text || document.getElementById('textColor').value,
+                        subtext: theme?.subtext || '8b949e',
+                        accent: theme?.accent || document.getElementById('accentColor').value,
+                        sha: theme?.sha || '7ee787',
+                        font: document.getElementById('font').value,
+                        radius: parseInt(document.getElementById('radius').value) || 10,
+                        borderWidth: parseInt(document.getElementById('borderWidth').value) || 1,
+                        showIcons: document.getElementById('showIcons').checked,
+                        showStats: document.getElementById('showStats').checked,
+                        showAvatar: document.getElementById('showAvatar').checked,
+                        showDate: document.getElementById('showDate').checked
+                    };
+                }
+        
+                function generateSVG(data, config) {
+                    const { repo, commits } = data;
+                    const width = config.width;
+                    const fontFamily = fonts[config.font] || fonts.jetbrains;
+                    
+                    // Calculate height based on content
+                    const headerHeight = config.showStats ? 100 : 70;
+                    const commitHeight = 60;
+                    const padding = 20;
+                    const height = headerHeight + (commits.length * commitHeight) + padding * 2 + 20;
+        
+                    // SVG Header with embedded fonts
+                    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none">
+            <defs>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Fira+Code:wght@400;500;600&amp;display=swap');
+                    
+                    .card-bg { fill: #${config.bg}; }
+                    .card-border { stroke: #${config.border}; stroke-width: ${config.borderWidth}; fill: none; }
+                    .title { fill: #${config.title}; font-family: ${fontFamily}; font-weight: 700; }
+                    .subtitle { fill: #${config.subtext}; font-family: ${fontFamily}; font-weight: 400; }
+                    .text { fill: #${config.text}; font-family: ${fontFamily}; font-weight: 500; }
+                    .text-muted { fill: #${config.subtext}; font-family: ${fontFamily}; font-weight: 400; }
+                    .sha { fill: #${config.sha}; font-family: ${fontFamily}; font-weight: 600; }
+                    .accent { fill: #${config.accent}; }
+                    .icon { fill: #${config.subtext}; }
+                    .stat-value { fill: #${config.text}; font-family: ${fontFamily}; font-weight: 700; }
+                    .stat-label { fill: #${config.subtext}; font-family: ${fontFamily}; font-weight: 400; }
+                    .commit-line { stroke: #${config.border}; stroke-width: 1; }
+                    .commit-dot { fill: #${config.accent}; }
+                    .divider { stroke: #${config.border}; stroke-width: 1; }
+                </style>
+                <clipPath id="avatarClip">
+                    <circle cx="35" cy="40" r="20"/>
+                </clipPath>
+            </defs>
+            
+            <!-- Background -->
+            <rect class="card-bg" width="${width}" height="${height}" rx="${config.radius}"/>
+            <rect class="card-border" x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="${config.radius}"/>`;
+        
+                    // Header section
+                    let yOffset = padding;
+                    
+                    // Avatar and repo name
+                    if (config.showAvatar) {
+                        svg += `
+            <!-- Avatar -->
+            <image href="${repo.owner.avatar_url}" x="15" y="20" width="40" height="40" clip-path="url(#avatarClip)" preserveAspectRatio="xMidYMid slice"/>
+            <circle cx="35" cy="40" r="20" stroke="#${config.border}" stroke-width="2" fill="none"/>`;
+                    }
+        
+                    const textXOffset = config.showAvatar ? 70 : 20;
+                    
+                    // Repository name
+                    svg += `
+            <!-- Repo Info -->
+            <text x="${textXOffset}" y="38" class="title" font-size="16">${escapeXml(repo.full_name)}</text>
+            <text x="${textXOffset}" y="56" class="subtitle" font-size="11">${escapeXml(truncateText(repo.description || 'No description', 60))}</text>`;
+        
+                    // Stats
+                    if (config.showStats) {
+                        const statsY = 80;
+                        svg += `
+            <!-- Stats -->
+            <g transform="translate(${textXOffset}, ${statsY})">
+                <!-- Stars -->
+                <g>
+                    <svg class="icon" width="14" height="14" viewBox="0 0 16 16" x="0" y="-11">
+                        <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                    </svg>
+                    <text x="18" y="0" class="stat-value" font-size="12">${formatNumber(repo.stargazers_count)}</text>
+                </g>
+                
+                <!-- Forks -->
+                <g transform="translate(70, 0)">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 16 16" x="0" y="-11">
+                        <path d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"/>
+                    </svg>
+                    <text x="18" y="0" class="stat-value" font-size="12">${formatNumber(repo.forks_count)}</text>
+                </g>
+                
+                <!-- Issues -->
+                <g transform="translate(130, 0)">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 16 16" x="0" y="-11">
+                        <path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                        <path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/>
+                    </svg>
+                    <text x="18" y="0" class="stat-value" font-size="12">${formatNumber(repo.open_issues_count)}</text>
+                </g>
+            </g>`;
+                        yOffset = 110;
+                    } else {
+                        yOffset = 75;
+                    }
+        
+                    // Divider
+                    svg += `
+            <line class="divider" x1="20" y1="${yOffset - 10}" x2="${width - 20}" y2="${yOffset - 10}"/>`;
+        
+                    // Section title
+                    svg += `
+            <!-- Commits Section -->
+            <text x="20" y="${yOffset + 10}" class="title" font-size="12">Recent Commits</text>`;
+                    
+                    yOffset += 30;
+        
+                    // Commits
+                    commits.forEach((commit, index) => {
+                        const message = commit.commit.message.split('\n')[0];
+                        const truncatedMessage = truncateText(message, Math.floor((width - 120) / 7));
+                        const sha = commit.sha.substring(0, 7);
+                        const date = new Date(commit.commit.author.date);
+                        const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const author = commit.commit.author.name;
+        
+                        svg += `
+            <!-- Commit ${index + 1} -->
+            <g transform="translate(20, ${yOffset + index * commitHeight})">
+                <!-- Timeline dot -->
+                <circle class="commit-dot" cx="8" cy="18" r="5"/>
+                ${index < commits.length - 1 ? `<line class="commit-line" x1="8" y1="26" x2="8" y2="${commitHeight}"/>` : ''}
+                
+                <!-- SHA -->
+                <text x="25" y="14" class="sha" font-size="10">${sha}</text>
+                
+                <!-- Message -->
+                <text x="25" y="30" class="text" font-size="11">${escapeXml(truncatedMessage)}</text>
+                
+                <!-- Author & Date -->
+                <text x="25" y="45" class="text-muted" font-size="9">${escapeXml(author)}${config.showDate ? ` · ${formattedDate}` : ''}</text>
+            </g>`;
+                    });
+        
+                    svg += `
+        </svg>`;
+        
+                    return svg;
+                }
+        
+                function updateEmbedCodes(config) {
+                    const baseUrl = window.location.origin + window.location.pathname;
+                    
+                    // Build URL parameters
+                    const params = new URLSearchParams();
+                    params.set('u', config.username);
+                    params.set('repo', config.repo);
+                    if (config.count !== 5) params.set('count', config.count);
+                    if (config.width !== 500) params.set('w', config.width);
+                    if (config.theme !== 'dark') params.set('theme', config.theme);
+                    if (!config.showIcons) params.set('icons', 'false');
+                    if (!config.showStats) params.set('stats', 'false');
+                    if (!config.showAvatar) params.set('avatar', 'false');
+                    if (!config.showDate) params.set('date', 'false');
+                    if (config.font !== 'jetbrains') params.set('font', config.font);
+                    if (config.radius !== 10) params.set('radius', config.radius);
+        
+                    const url = `${baseUrl}?${params.toString()}`;
+                    
+                    // Light theme URL
+                    const lightParams = new URLSearchParams(params);
+                    lightParams.set('theme', 'light');
+                    const lightUrl = `${baseUrl}?${lightParams.toString()}`;
+        
+                    // Dark theme URL  
+                    const darkParams = new URLSearchParams(params);
+                    darkParams.set('theme', 'dark');
+                    const darkUrl = `${baseUrl}?${darkParams.toString()}`;
+        
+                    document.getElementById('directUrl').textContent = url;
+                    document.getElementById('markdownSimple').textContent = `![GitHub Commits](${url})`;
+                    document.getElementById('htmlEmbed').textContent = `<img src="${url}" alt="GitHub Commits Card" />`;
+                    document.getElementById('markdownAdvanced').textContent = `<picture>
+          <source srcset="${darkUrl}" media="(prefers-color-scheme: dark)" />
+          <source srcset="${lightUrl}" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)" />
+          <img src="${lightUrl}" alt="GitHub Commits Card" />
+        </picture>`;
+                }
+        
+                function copySVG() {
+                    const svgOutput = document.getElementById('svgOutput');
+                    const svg = svgOutput.querySelector('svg');
+                    if (!svg) {
+                        alert('Generate a card first!');
+                        return;
+                    }
+                    navigator.clipboard.writeText(svg.outerHTML).then(() => showToast('SVG copied!'));
+                }
+        
+                function copyURL() {
+                    const url = document.getElementById('directUrl').textContent;
+                    if (url === 'Generate a card to see the URL') {
+                        alert('Generate a card first!');
+                        return;
+                    }
+                    navigator.clipboard.writeText(url).then(() => showToast('URL copied!'));
+                }
+        
+                function copyMarkdown() {
+                    const markdown = document.getElementById('markdownAdvanced').textContent;
+                    navigator.clipboard.writeText(markdown).then(() => showToast('Markdown copied!'));
+                }
+        
+                function downloadSVG() {
+                    const svgOutput = document.getElementById('svgOutput');
+                    const svg = svgOutput.querySelector('svg');
+                    if (!svg) {
+                        alert('Generate a card first!');
+                        return;
+                    }
+                    
+                    const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `github-commits-${document.getElementById('username').value}-${document.getElementById('repo').value}.svg`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast('SVG downloaded!');
+                }
+        
+                function showToast(message) {
+                    const toast = document.getElementById('toast');
+                    toast.textContent = message;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2500);
+                }
+        
+                function setPreviewBg(color, btn) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const output = document.getElementById('svgOutput');
+                    if (color === 'transparent') {
+                        output.style.background = "repeating-conic-gradient(#21262d 0% 25%, #161b22 0% 50%) 50% / 20px 20px";
+                    } else {
+                        output.style.background = color;
+                    }
+                }
+        
+                // Utility functions
+                function escapeXml(text) {
+                    return text
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&apos;');
+                }
+        
+                function truncateText(text, maxLength) {
+                    if (text.length <= maxLength) return text;
+                    return text.substring(0, maxLength - 3) + '...';
+                }
+        
+                function formatNumber(num) {
+                    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+                    return num.toString();
+                }
+    </script>
+</body>
+
+</html>
