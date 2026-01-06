@@ -8,20 +8,19 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com)
 [![CI](https://github.com/navaranjithsai/github-commits-card/actions/workflows/ci.yml/badge.svg)](https://github.com/navaranjithsai/github-commits-card/actions/workflows/ci.yml)
-[![Deploy to Cloudflare Workers](https://github.com/navaranjithsai/github-commits-card/actions/workflows/cloudflare.yml/badge.svg)](https://github.com/navaranjithsai/github-commits-card/actions/workflows/cloudflare.yml)
 
 <br/>
 
 <picture>
   <source
-    srcset="https://github-commits-card.vercel.app/api?theme=dark&repo=next.js&u=vercel&count=3"
+    srcset="https://github-commits-card.navaranjith-sai1234.workers.dev/?theme=dark&repo=next.js&u=vercel&count=3"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://github-commits-card.vercel.app/api?u=facebook&repo=react&theme=light"
+    srcset="https://github-commits-card.navaranjith-sai1234.workers.dev/?u=facebook&repo=react&theme=light"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://github-commits-card.vercel.app/api?u=facebook&repo=react&theme=dark" alt="GitHub Commits Card Demo" />
+  <img src="https://github-commits-card.navaranjith-sai1234.workers.dev/?u=facebook&repo=react&theme=dark" alt="GitHub Commits Card Demo" />
 </picture>
 
 <br/>
