@@ -7,6 +7,8 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://github.com)
+[![CI](https://github.com/navaranjithsai/github-commits-card/actions/workflows/ci.yml/badge.svg)](https://github.com/navaranjithsai/github-commits-card/actions/workflows/ci.yml)
+[![Deploy to Cloudflare Workers](https://github.com/navaranjithsai/github-commits-card/actions/workflows/cloudflare.yml/badge.svg)](https://github.com/navaranjithsai/github-commits-card/actions/workflows/cloudflare.yml)
 
 <br/>
 
@@ -358,10 +360,39 @@ https://your-domain.com/
 
 4. **Use your deployed URL**
    ```markdown
-   ![Commits](https://your-app.vercel.app/?u=username&repo=repo)
+   ![Commits](https://your-app.vercel.app/api?u=username&repo=repo)
    ```
 
-### Option 2: Docker
+### Option 2: Cloudflare Workers
+
+1. **Clone this repository**
+   ```bash
+   git clone https://github.com/navaranjithsai/github-commits-card.git
+   cd github-commits-card
+   npm install
+   ```
+
+2. **Configure Wrangler** (First time only)
+   ```bash
+   npx wrangler login
+   ```
+
+3. **Set GitHub Token** (Optional, for higher rate limits)
+   ```bash
+   npx wrangler secret put GITHUB_TOKEN
+   ```
+
+4. **Deploy to Cloudflare Workers**
+   ```bash
+   npm run cf:deploy
+   ```
+
+5. **Use your deployed URL**
+   ```markdown
+   ![Commits](https://github-commits-card.your-subdomain.workers.dev?u=username&repo=repo)
+   ```
+
+### Option 3: Docker
 
 ```bash
 # Clone the repository
@@ -375,7 +406,7 @@ docker build -t github-commits-card .
 docker run -p 3000:3000 -e GITHUB_TOKEN=your_token github-commits-card
 ```
 
-### Option 3: Node.js
+### Option 4: Node.js
 
 ```bash
 # Clone and install
@@ -386,8 +417,11 @@ npm install
 # Set environment variable (optional, for higher rate limits)
 export GITHUB_TOKEN=your_github_token
 
-# Start development server
-npm run dev
+# Start Vercel development server
+npx vercel dev
+
+# OR start Cloudflare Workers development server
+npm run cf:dev
 ```
 
 ---
@@ -397,7 +431,9 @@ npm run dev
 ```
 github-commits-card/
 ├── api/
-│   └── index.ts         # Vercel serverless function (TypeScript)
+│   └── index.ts         # Vercel serverless function
+├── workers/
+│   └── index.ts         # Cloudflare Workers entry point
 ├── src/
 │   ├── types.ts         # TypeScript interfaces
 │   ├── themes.ts        # Theme definitions
@@ -408,7 +444,8 @@ github-commits-card/
 │   └── index.html       # Card generator UI
 ├── package.json
 ├── tsconfig.json
-├── vercel.json
+├── vercel.json          # Vercel configuration
+├── wrangler.toml        # Cloudflare Workers configuration
 └── README.md
 ```
 

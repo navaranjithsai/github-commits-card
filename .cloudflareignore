@@ -1,0 +1,19 @@
+# Vercel
+api/
+vercel.json
+.vercel/
+.vercelignore
+
+# Build & CI
+.github/
+Dockerfile
+.dockerignore
+vitest.config.ts
+coverage/
+src/**/*.test.ts
+
+# Documentation
+README.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+LICENSE

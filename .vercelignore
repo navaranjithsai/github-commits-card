@@ -1,0 +1,19 @@
+# Cloudflare Workers
+workers/
+wrangler.toml
+.wrangler/
+.cloudflareignore
+
+# Build & CI
+.github/
+Dockerfile
+.dockerignore
+vitest.config.ts
+coverage/
+src/**/*.test.ts
+
+# Documentation
+README.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+LICENSE

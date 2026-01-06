@@ -4,7 +4,12 @@
   "description": "Generate beautiful SVG cards for GitHub commit history",
   "main": "api/index.ts",
   "scripts": {
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "cf:dev": "wrangler dev",
+    "cf:deploy": "wrangler deploy",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "engines": {
     "node": ">=18.x <=22.x"
@@ -15,14 +20,21 @@
     "svg",
     "card",
     "readme",
-    "badge"
+    "badge",
+    "vercel",
+    "cloudflare"
   ],
   "author": "navaranjithsai",
   "license": "MIT",
   "devDependencies": {
+    "@cloudflare/kv-asset-handler": "^0.4.1",
+    "@cloudflare/workers-types": "^4.20240117.0",
     "@types/node": "^20.10.0",
     "@vercel/node": "^3.0.0",
+    "@vitest/coverage-v8": "^1.1.0",
     "typescript": "^5.3.0",
-    "vercel": "^33.0.0"
+    "vercel": "^33.0.0",
+    "vitest": "^1.1.0",
+    "wrangler": "^3.22.0"
   }
 }
