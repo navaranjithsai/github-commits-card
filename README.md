@@ -12,14 +12,14 @@
 
 <picture>
   <source
-    srcset="https://navaranjithsai.github.io/github-commits-card?u=facebook&repo=react&theme=dark"
+    srcset="https://github-commits-card.vercel.app/api?theme=dark&repo=next.js&u=vercel&count=3"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://navaranjithsai.github.io/github-commits-card?u=facebook&repo=react&theme=light"
+    srcset="https://github-commits-card.vercel.app/api?u=facebook&repo=react&theme=light"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://navaranjithsai.github.io/github-commits-card?u=facebook&repo=react&theme=dark" alt="GitHub Commits Card Demo" />
+  <img src="https://github-commits-card.vercel.app/api?u=facebook&repo=react&theme=dark" alt="GitHub Commits Card Demo" />
 </picture>
 
 <br/>
@@ -91,13 +91,13 @@
 ### Basic Usage
 
 ```markdown
-![GitHub Commits](https://navaranjithsai.github.io/github-commits-card/?u=navaranjithsai&repo=MailVoyage&count=2)
+![GitHub Commits](https://your-domain.com/api?u=navaranjithsai&repo=MailVoyage&count=2)
 ```
 
 ### Example
 
 ```markdown
-![GitHub Commits](https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&count=5&theme=dark)
+![GitHub Commits](https://your-domain.com/api?u=facebook&repo=react&count=5&theme=dark)
 ```
 
 ### With Dark/Light Mode Support
@@ -105,14 +105,14 @@
 ```html
 <picture>
   <source
-    srcset="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&theme=dark"
+    srcset="https://your-domain.com/api?u=facebook&repo=react&theme=dark"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&theme=light"
+    srcset="https://your-domain.com/api?u=facebook&repo=react&theme=light"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react" alt="GitHub Commits" />
+  <img src="https://your-domain.com/api?u=facebook&repo=react" alt="GitHub Commits" />
 </picture>
 ```
 
@@ -322,15 +322,15 @@ https://your-domain.com/
 <p align="center">
   <picture>
     <source
-      srcset="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&theme=tokyo_night&count=7"
+      srcset="https://your-domain.com/api?u=facebook&repo=react&theme=tokyo_night&count=7"
       media="(prefers-color-scheme: dark)"
     />
     <source
-      srcset="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&theme=github_light&count=7"
+      srcset="https://your-domain.com/api?u=facebook&repo=react&theme=github_light&count=7"
       media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
     />
     <img 
-      src="https://navaranjithsai.github.io/github-commits-card/?u=facebook&repo=react&theme=github_light&count=7" 
+      src="https://your-domain.com/api?u=facebook&repo=react&theme=github_light&count=7" 
       alt="React Commits"
       width="500"
     />
