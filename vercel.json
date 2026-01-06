@@ -1,0 +1,27 @@
+{
+    "rewrites": [
+        {
+            "source": "/api",
+            "destination": "/api/index"
+        },
+        {
+            "source": "/api/:path*",
+            "destination": "/api/index"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "s-maxage=1800, stale-while-revalidate"
+                },
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                }
+            ]
+        }
+    ]
+}

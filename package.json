@@ -1,0 +1,28 @@
+{
+  "name": "github-commits-card",
+  "version": "1.0.0",
+  "description": "Generate beautiful SVG cards for GitHub commit history",
+  "main": "api/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.x <=22.x"
+  },
+  "keywords": [
+    "github",
+    "commits",
+    "svg",
+    "card",
+    "readme",
+    "badge"
+  ],
+  "author": "navaranjithsai",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vercel/node": "^3.0.0",
+    "typescript": "^5.3.0",
+    "vercel": "^33.0.0"
+  }
+}

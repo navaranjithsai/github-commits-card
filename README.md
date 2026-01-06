@@ -375,7 +375,7 @@ docker build -t github-commits-card .
 docker run -p 3000:3000 -e GITHUB_TOKEN=your_token github-commits-card
 ```
 
-### Option 3: Node.js [Future Implementations]
+### Option 3: Node.js
 
 ```bash
 # Clone and install
@@ -383,29 +383,31 @@ git clone https://github.com/navaranjithsai/github-commits-card.git
 cd github-commits-card
 npm install
 
-# Set environment variable
+# Set environment variable (optional, for higher rate limits)
 export GITHUB_TOKEN=your_github_token
 
-# Start server
-npm start
+# Start development server
+npm run dev
 ```
 
 ---
 
-## 📁 Project Structure [Future Implementation]
+## 📁 Project Structure
 
 ```
 github-commits-card/
 ├── api/
-│   └── card.js          # Serverless function for Vercel
+│   └── index.ts         # Vercel serverless function (TypeScript)
 ├── src/
-│   ├── themes.js        # Theme definitions
-│   ├── fonts.js         # Font configurations
-│   ├── generator.js     # SVG generation logic
-│   └── utils.js         # Utility functions
+│   ├── types.ts         # TypeScript interfaces
+│   ├── themes.ts        # Theme definitions
+│   ├── fonts.ts         # Font configurations
+│   ├── generator.ts     # SVG generation logic
+│   └── utils.ts         # Utility functions
 ├── public/
 │   └── index.html       # Card generator UI
 ├── package.json
+├── tsconfig.json
 ├── vercel.json
 └── README.md
 ```
